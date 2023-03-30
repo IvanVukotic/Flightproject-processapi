@@ -1,0 +1,14 @@
+[
+  {
+    "price": 25.13,
+    "emptySeats": 65,
+    "type": "enim",
+    "totalSeats": 80
+  },
+  {
+    "price": 66.01,
+    "emptySeats": 54,
+    "type": "voluptate",
+    "totalSeats": 76
+  }
+]

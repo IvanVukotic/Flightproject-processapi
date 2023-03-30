@@ -1,0 +1,129 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<types:mule xmlns:types="http://www.mulesoft.org/schema/mule/types">
+  <types:catalog>
+    <types:type name="SoapXML" format="xml">
+      <types:example format="xml" element="flight" location="examples/xmlexample.xml"/>
+    </types:type>
+    <types:type name="apisystemresponse" format="json">
+      <types:shape format="weave" example="examples/flightapisysresponse.json"><![CDATA[%dw 2.0
+
+type apisystemresponse = Array<{|  ID: Number {"typeId": "int"},   code: String,   price: Number {"typeId": "int"},   departureDate: String,   origin: String,   destination: String,   emptySeats: Number {"typeId": "int"},   plane: {|    "type": String,     totalSeats: Number {"typeId": "int"}  |}|}> {"example": "[{\\\"ID\\\":1,\\\"code\\\":\\\"rree0001\\\",\\\"price\\\":541,\\\"departureDate\\\":\\\"2016-01-20T00:00:00\\\",\\\"origin\\\":\\\"MUA\\\",\\\"destination\\\":\\\"LAX\\\",\\\"emptySeats\\\":0,\\\"plane\\\":{\\\"type\\\":\\\"Boeing 787\\\",\\\"totalSeats\\\":200}},{\\\"ID\\\":2,\\\"code\\\":\\\"eefd0123\\\",\\\"price\\\":300,\\\"departureDate\\\":\\\"2016-01-25T00:00:00\\\",\\\"origin\\\":\\\"MUA\\\",\\\"destination\\\":\\\"CLE\\\",\\\"emptySeats\\\":7,\\\"plane\\\":{\\\"type\\\":\\\"Boeing 747\\\",\\\"totalSeats\\\":345}},{\\\"ID\\\":3,\\\"code\\\":\\\"ffee0192\\\",\\\"price\\\":300,\\\"departureDate\\\":\\\"2016-01-20T00:00:00\\\",\\\"origin\\\":\\\"MUA\\\",\\\"destination\\\":\\\"LAX\\\",\\\"emptySeats\\\":0,\\\"plane\\\":{\\\"type\\\":\\\"Boeing 777\\\",\\\"totalSeats\\\":300}},{\\\"ID\\\":4,\\\"code\\\":\\\"rree1000\\\",\\\"price\\\":200,\\\"departureDate\\\":\\\"2016-01-20T00:00:00\\\",\\\"origin\\\":\\\"MUA\\\",\\\"destination\\\":\\\"CLE\\\",\\\"emptySeats\\\":5,\\\"plane\\\":{\\\"type\\\":\\\"Boeing 737\\\",\\\"totalSeats\\\":150}},{\\\"ID\\\":5,\\\"code\\\":\\\"rree1093\\\",\\\"price\\\":142,\\\"departureDate\\\":\\\"2016-02-11T00:00:00\\\",\\\"origin\\\":\\\"MUA\\\",\\\"destination\\\":\\\"SFO\\\",\\\"emptySeats\\\":1,\\\"plane\\\":{\\\"type\\\":\\\"Boeing 737\\\",\\\"totalSeats\\\":150}},{\\\"ID\\\":6,\\\"code\\\":\\\"ffee1112\\\",\\\"price\\\":954,\\\"departureDate\\\":\\\"2016-01-20T00:00:00\\\",\\\"origin\\\":\\\"MUA\\\",\\\"destination\\\":\\\"CLE\\\",\\\"emptySeats\\\":100,\\\"plane\\\":{\\\"type\\\":\\\"Boeing 787\\\",\\\"totalSeats\\\":200}},{\\\"ID\\\":7,\\\"code\\\":\\\"eefd1994\\\",\\\"price\\\":676,\\\"departureDate\\\":\\\"2016-01-01T00:00:00\\\",\\\"origin\\\":\\\"MUA\\\",\\\"destination\\\":\\\"SFO\\\",\\\"emptySeats\\\":0,\\\"plane\\\":{\\\"type\\\":\\\"Boeing 777\\\",\\\"totalSeats\\\":300}},{\\\"ID\\\":8,\\\"code\\\":\\\"ffee2000\\\",\\\"price\\\":300,\\\"departureDate\\\":\\\"2016-02-20T00:00:00\\\",\\\"origin\\\":\\\"MUA\\\",\\\"destination\\\":\\\"SFO\\\",\\\"emptySeats\\\":30,\\\"plane\\\":{\\\"type\\\":\\\"Boeing 737\\\",\\\"totalSeats\\\":150}},{\\\"ID\\\":9,\\\"code\\\":\\\"eefd3000\\\",\\\"price\\\":900,\\\"departureDate\\\":\\\"2016-02-01T00:00:00\\\",\\\"origin\\\":\\\"MUA\\\",\\\"destination\\\":\\\"SFO\\\",\\\"emptySeats\\\":0,\\\"plane\\\":{\\\"type\\\":\\\"Boeing 737\\\",\\\"totalSeats\\\":150}},{\\\"ID\\\":10,\\\"code\\\":\\\"eefd4511\\\",\\\"price\\\":900,\\\"departureDate\\\":\\\"2016-01-15T00:00:00\\\",\\\"origin\\\":\\\"MUA\\\",\\\"destination\\\":\\\"LAX\\\",\\\"emptySeats\\\":100,\\\"plane\\\":{\\\"type\\\":\\\"Boeing 777\\\",\\\"totalSeats\\\":300}},{\\\"ID\\\":11,\\\"code\\\":\\\"rree4567\\\",\\\"price\\\":456,\\\"departureDate\\\":\\\"2016-01-20T00:00:00\\\",\\\"origin\\\":\\\"MUA\\\",\\\"destination\\\":\\\"SFO\\\",\\\"emptySeats\\\":100,\\\"plane\\\":{\\\"type\\\":\\\"Boeing 737\\\",\\\"totalSeats\\\":150}}]"}
+
+]]></types:shape>
+    </types:type>
+    <types:type name="outputneccesarydata" format="json">
+      <types:shape format="weave" example="examples/outputnecessary data.json"><![CDATA[%dw 2.0
+
+type outputneccesarydata = Array<{|  price: Number {"typeId": "int"},   emptySeats: Number {"typeId": "int"},   "type": String,   totalSeats: Number {"typeId": "int"}|}> {"example": "[{\\\"price\\\":900,\\\"emptySeats\\\":100,\\\"type\\\":\\\"Boeing 777\\\",\\\"totalSeats\\\":300},{\\\"price\\\":900,\\\"emptySeats\\\":100,\\\"type\\\":\\\"Boeing 777\\\",\\\"totalSeats\\\":300},{\\\"price\\\":900,\\\"emptySeats\\\":100,\\\"type\\\":\\\"Boeing 777\\\",\\\"totalSeats\\\":300}]"}
+
+]]></types:shape>
+    </types:type>
+    <types:type name="final_response" format="json">
+      <types:shape format="weave" example="examples/finalresponse.json"><![CDATA[%dw 2.0
+
+type final_response = {|
+  destination: String, 
+  planes: Array<{|    "type": String,     pricePerSeat: Number {"typeId": "int"}  |}>
+|} {"example": "{\\\"destination\\\":\\\"LAX\\\",\\\"planes\\\":[{\\\"type\\\":\\\"Boeing 777\\\",\\\"pricePerSeat\\\":180000}]}"}
+
+]]></types:shape>
+    </types:type>
+    <types:type name="justnecessarydata" format="json">
+      <types:shape format="weave" example="examples/neccesarydataall.json"><![CDATA[%dw 2.0
+
+type justnecessarydata = Array<{|  price: Number {"typeId": "int"},   emptySeats: Number {"typeId": "int"},   "type": String,   totalSeats: Number {"typeId": "int"}|}> {"example": "[{\\\"price\\\":541,\\\"emptySeats\\\":0,\\\"type\\\":\\\"Boeing 787\\\",\\\"totalSeats\\\":200},{\\\"price\\\":300,\\\"emptySeats\\\":7,\\\"type\\\":\\\"Boeing 747\\\",\\\"totalSeats\\\":345},{\\\"price\\\":300,\\\"emptySeats\\\":0,\\\"type\\\":\\\"Boeing 777\\\",\\\"totalSeats\\\":300},{\\\"price\\\":200,\\\"emptySeats\\\":5,\\\"type\\\":\\\"Boeing 737\\\",\\\"totalSeats\\\":150},{\\\"price\\\":142,\\\"emptySeats\\\":1,\\\"type\\\":\\\"Boeing 737\\\",\\\"totalSeats\\\":150},{\\\"price\\\":954,\\\"emptySeats\\\":100,\\\"type\\\":\\\"Boeing 787\\\",\\\"totalSeats\\\":200},{\\\"price\\\":676,\\\"emptySeats\\\":0,\\\"type\\\":\\\"Boeing 777\\\",\\\"totalSeats\\\":300},{\\\"price\\\":300,\\\"emptySeats\\\":30,\\\"type\\\":\\\"Boeing 737\\\",\\\"totalSeats\\\":150},{\\\"price\\\":900,\\\"emptySeats\\\":0,\\\"type\\\":\\\"Boeing 737\\\",\\\"totalSeats\\\":150},{\\\"price\\\":900,\\\"emptySeats\\\":100,\\\"type\\\":\\\"Boeing 777\\\",\\\"totalSeats\\\":300},{\\\"price\\\":456,\\\"emptySeats\\\":100,\\\"type\\\":\\\"Boeing 737\\\",\\\"totalSeats\\\":150}]"}
+
+]]></types:shape>
+    </types:type>
+    <types:type name="soapdatatomultiply" format="xml">
+      <types:example format="xml" element="data" location="examples/dataforlookup.xml"/>
+    </types:type>
+    <types:type name="soapsubstractresponse" format="java">
+      <types:shape format="raml"><![CDATA[#%RAML 1.0 DataType
+type: string]]></types:shape>
+    </types:type>
+    <types:type name="subjson" format="json">
+      <types:shape format="weave" example="examples/substractreponsejson.json"><![CDATA[%dw 2.0
+
+type subjson = {| number: Number {"typeId": "int"} |} {"example": "{\\\"number\\\":55}"}
+
+]]></types:shape>
+    </types:type>
+    <types:type name="result" format="java">
+      <types:shape format="raml"><![CDATA[#%RAML 1.0 DataType
+type: number]]></types:shape>
+    </types:type>
+    <types:type name="soapsubres" format="java">
+      <types:shape format="raml"><![CDATA[#%RAML 1.0 DataType
+type: string]]></types:shape>
+    </types:type>
+  </types:catalog>
+  <types:enrichment select="#6f1b1e73-178b-4951-84d7-8250185c60d2">
+    <types:processor-declaration>
+      <types:input-event>
+        <types:message>
+          <types:payload type="SoapXML"/>
+        </types:message>
+      </types:input-event>
+    </types:processor-declaration>
+  </types:enrichment>
+  <types:enrichment select="#586c21f5-7331-4d34-a2eb-3fbbb19f6404">
+    <types:processor-declaration>
+      <types:input-event>
+        <types:message>
+          <types:payload type="SoapXML"/>
+        </types:message>
+      </types:input-event>
+    </types:processor-declaration>
+  </types:enrichment>
+  <types:enrichment select="#193ab5df-ef72-45c6-821c-aa1d75c778e7">
+    <types:processor-declaration>
+      <types:input-event>
+        <types:message>
+          <types:payload type="apisystemresponse"/>
+        </types:message>
+      </types:input-event>
+      <types:output-event>
+        <types:message>
+          <types:payload type="outputneccesarydata"/>
+        </types:message>
+      </types:output-event>
+    </types:processor-declaration>
+  </types:enrichment>
+  <types:enrichment select="#275ab31e-cd54-412f-9db6-d384904b37e3">
+    <types:processor-declaration>
+      <types:input-event>
+        <types:message>
+          <types:payload type="soapdatatomultiply"/>
+        </types:message>
+      </types:input-event>
+    </types:processor-declaration>
+  </types:enrichment>
+  <types:enrichment select="#eda083f3-61ae-4a46-bbb3-df29399946bb"/>
+  <types:enrichment select="#3f407ac1-8b0c-4468-be6c-9172ce57203c"/>
+  <types:enrichment select="#65d5e2e6-471a-4867-832b-36241bb51f10">
+    <types:processor-declaration>
+      <types:input-event>
+        <types:message>
+          <types:payload type="soapsubstractresponse"/>
+        </types:message>
+      </types:input-event>
+      <types:output-event>
+        <types:message>
+          <types:payload type="result"/>
+        </types:message>
+      </types:output-event>
+    </types:processor-declaration>
+  </types:enrichment>
+  <types:enrichment select="#fb957ec2-31cf-4bbf-ac6b-875968123ab9"/>
+  <types:enrichment select="#ac856f84-5c29-4339-8510-cbd490500359"/>
+  <types:enrichment select="#a5f12905-c8b3-449c-b119-0df1f65deab1">
+    <types:processor-declaration>
+      <types:input-event>
+        <types:message>
+          <types:payload type="justnecessarydata"/>
+        </types:message>
+      </types:input-event>
+    </types:processor-declaration>
+  </types:enrichment>
+</types:mule>

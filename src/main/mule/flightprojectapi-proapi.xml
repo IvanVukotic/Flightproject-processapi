@@ -1,0 +1,215 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<mule xmlns:wsc="http://www.mulesoft.org/schema/mule/wsc" xmlns:ee="http://www.mulesoft.org/schema/mule/ee/core"
+	xmlns:http="http://www.mulesoft.org/schema/mule/http"
+	xmlns="http://www.mulesoft.org/schema/mule/core" xmlns:doc="http://www.mulesoft.org/schema/mule/documentation" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://www.mulesoft.org/schema/mule/core http://www.mulesoft.org/schema/mule/core/current/mule.xsd
+http://www.mulesoft.org/schema/mule/http http://www.mulesoft.org/schema/mule/http/current/mule-http.xsd
+http://www.mulesoft.org/schema/mule/ee/core http://www.mulesoft.org/schema/mule/ee/core/current/mule-ee.xsd
+http://www.mulesoft.org/schema/mule/wsc http://www.mulesoft.org/schema/mule/wsc/current/mule-wsc.xsd">
+	<flow name="flightprojectapi-proapiFlow" doc:id="e27ed99a-2919-4828-ab34-d7f9eb723658" >
+		<http:listener doc:name="Listener" doc:id="593f1c7d-d84a-4b7e-93eb-d0651747638c" path="/${http.basepath}" config-ref="HTTP_Listener_config1"/>
+		<set-variable value='#[attributes.queryParams.destination default "LAX"]' doc:name="destination" doc:id="85af83b4-3c5e-44f3-8e4b-6d9a68debaef" variableName="destination"/>
+		<http:request method="OPTIONS" doc:name="RequestToTheFlightsAPI" doc:id="cf460abd-4d21-4556-9215-62b254fc0a52" config-ref="HTTP_Request_configurationprocessapi" path="/${requestsys.basepath}">
+			<http:query-params ><![CDATA[#[output application/java
+---
+{
+	destination : vars.destination
+}]]]></http:query-params>
+		</http:request>
+		<ee:transform doc:name="TakeJustTheDataWeNeed" doc:id="553bc08a-03f6-4646-ba52-ee44f3ceeb6b" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload map ( payload01 , indexOfPayload01 ) -> {
+	price: payload01.price,
+	emptySeats: payload01.emptySeats,
+	"type": payload01.plane."type",
+	totalSeats: payload01.plane.totalSeats
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<ee:transform doc:name="TotalAmountVARAsAnEmptyArray" doc:id="1a5c2efe-828d-4ee7-a22f-f4103415119c" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+			</ee:message>
+			<ee:variables >
+				<ee:set-variable variableName="totalamount" ><![CDATA[%dw 2.0
+output application/json
+---
+[] as Array]]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+		<foreach doc:name="For Each" doc:id="08ac1c2f-500d-45d3-96e7-d592db76323b" >
+			<flow-ref doc:name="FlowReferenceToCalcMultiply" doc:id="cc8afb26-48da-4f54-bd8e-ca563a1e73cc" name="SoapMultiply"/>
+			<ee:transform doc:name="PuttingTheResultsIntoAVariableWhichIsAnArray" doc:id="fb957ec2-31cf-4bbf-ac6b-875968123ab9" >
+				<ee:message >
+				</ee:message>
+				<ee:variables >
+					<ee:set-variable variableName="totalamount" ><![CDATA[%dw 2.0
+output application/json
+---
+flatten(vars.totalamount ++ [{
+		pricePerSeat: vars.totalamounts
+	}])]]></ee:set-variable>
+				</ee:variables>
+			</ee:transform>
+		</foreach>
+		<ee:transform doc:name="GetTheTypePlaneDatawithIndex" doc:id="a36fae19-a87c-4ff7-b1a2-0769b9b6e88d" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload map ((item, index)-> {
+	"index": index,
+	"type": item."type"
+})]]></ee:set-payload>
+			</ee:message>
+			<ee:variables >
+				<ee:set-variable variableName="prices" ><![CDATA[%dw 2.0
+output application/json
+---
+vars.totalamount map ((item, index)-> {
+	"index": index,
+	pricePerSeat: item.pricePerSeat
+	
+	})]]></ee:set-variable>
+			</ee:variables>
+		
+</ee:transform>
+<ee:transform doc:name="CombineTheTwoDataTypeAndPricePerSeat" doc:id="bab03815-671e-4a9d-926a-c60f9240a0da" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload map (item1) ->
+	{
+		"index": item1."index",
+		"type": item1."type",
+		(vars.prices filter ($."index" contains item1."index") 
+            map (item2) -> {
+                "pricePerSeat": item2."pricePerSeat"
+            }
+        )
+    }
+]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<ee:transform doc:name="GetTheDataWithoutIndex" doc:id="9626ef2b-094e-4afd-9e51-fb849744d6a7" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+ payload map ((item,index)->
+		{
+			"type": item."type",
+			"pricePerSeat": item.pricePerSeat
+		}
+	)
+]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+<ee:transform doc:name="GroupByType" doc:id="c52f1324-c22c-4e05-9294-45cf1cb49617" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload groupBy $."type"]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<ee:transform doc:name="PluckJustTheValuesSoTheGroupByDoesn'tGiveUsArrays" doc:id="340ae719-2a34-4267-9e37-188ad17a5a9e" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+flatten(payload pluck((value,key,index)-> value))]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<ee:transform doc:name="FinalMessageToTheUser" doc:id="16d6813b-1936-4991-a42d-08e14432a752" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+{
+	destination: vars.destination,
+	"planes": payload
+}]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<logger level="INFO" doc:name="Logger" doc:id="5fee025b-3823-4d08-8c30-49d3c0b1c9ac" message="#[payload]"/>
+	</flow>
+	<flow name="SoapMultiply" doc:id="e8f357bd-3141-48d8-a2b1-1c865b411ac9" >
+		<ee:transform doc:name="Transform Message" doc:id="a5f12905-c8b3-449c-b119-0df1f65deab1" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<ee:transform doc:name="CollectionOfCalculations" doc:id="3f407ac1-8b0c-4468-be6c-9172ce57203c" >
+			<ee:message >
+			</ee:message>
+			<ee:variables >
+				<ee:set-variable variableName="substract" ><![CDATA[%dw 2.0
+output application/json
+---
+Mule::lookup("SoapSubstract",{intA:payload.totalSeats as Number,intB:payload.emptySeats as Number},250000)]]></ee:set-variable>
+				<ee:set-variable variableName="price" ><![CDATA[%dw 2.0
+output application/json
+---
+payload.price as Number]]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+<http:request method="GET" doc:name="RequestMultiply" doc:id="6037760d-a433-49e8-9f87-0d3806bb2aa5" config-ref="HTTP_Request_configurationSoap" path="/${requestsoap.basepath}/${requestsoap.basepathmul}">
+			<http:query-params ><![CDATA[#[output application/java
+---
+{
+	intb : vars.substract,
+	inta : vars.price
+}]]]></http:query-params>
+		</http:request>
+		<ee:transform doc:name="GetTheResultasANumber" doc:id="05e7c61b-bed5-46b5-98d1-12f31fe60e63" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload.result as Number]]></ee:set-payload>
+			</ee:message>
+		</ee:transform>
+		<ee:transform doc:name="FinalResultPerSeat" doc:id="ac856f84-5c29-4339-8510-cbd490500359" >
+			<ee:message >
+			</ee:message>
+			<ee:variables >
+				<ee:set-variable variableName="totalamounts" ><![CDATA[%dw 2.0
+ns ns0 http://tempuri.org/
+output application/json
+---
+(payload) as String ++ 'USD']]></ee:set-variable>
+			</ee:variables>
+		</ee:transform>
+	</flow>
+	<flow name="SoapSubstract" doc:id="4278a9e7-5fae-4b37-80ad-a8333877c9a5" >
+<http:request method="GET" doc:name="RequestSubstract" doc:id="5457879f-9e0c-4abc-b9c9-6c14209ae31c" config-ref="HTTP_Request_configurationSoap" path="/${requestsoap.basepath}/${requestsoap.basepathsub}">
+			<http:query-params ><![CDATA[#[output application/java
+---
+{
+	intb : payload.intB,
+	inta : payload.intA
+}]]]></http:query-params>
+		</http:request>
+		<ee:transform doc:name="GetTheResultAsASimpleNumber" doc:id="65d5e2e6-471a-4867-832b-36241bb51f10" >
+			<ee:message >
+				<ee:set-payload ><![CDATA[%dw 2.0
+output application/json
+---
+payload.result as Number]]></ee:set-payload>
+			</ee:message>
+			<ee:variables >
+			</ee:variables>
+		</ee:transform>
+	</flow>
+</mule>

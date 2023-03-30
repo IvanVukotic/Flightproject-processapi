@@ -1,0 +1,16 @@
+http:
+  host: "localhost"
+  port: "8081"
+  basepath: "processapi"
+requestsys:
+  host: "flightproject-sysapi.us-e2.cloudhub.io "
+  port: "80"
+  basepath: "sysapi"
+requestsoap:
+  host: "flightproject-sysapicalc.us-e2.cloudhub.io "
+  port: "80"
+  basepath: "soapoperations"
+  basepathsub: "substractions"
+  basepathmul: "multiplications"
+  basepathadd: "additions"
+  basepathdiv: "divisions"

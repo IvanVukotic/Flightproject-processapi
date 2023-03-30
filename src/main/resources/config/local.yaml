@@ -1,0 +1,21 @@
+multi:
+  wsdl: "http://www.dneonline.com/calculator.asmx?WSDL"
+  service: "Calculator"
+  port: "CalculatorSoap12"
+  address: "http://www.dneonline.com/calculator.asmx"
+http:
+  host: "localhost"
+  port: "8091"
+  basepath: "processapi"
+requestsys:
+  host: "localhost"
+  port: "8085"
+  basepath: "sysapi"
+requestsoap:
+  host: "localhost"
+  port: "8095"
+  basepath: "soapoperations"
+  basepathsub: "substractions"
+  basepathmul: "multiplications"
+  basepathadd: "additions"
+  basepathdiv: "divisions"
